@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.google.inject.{Inject, Singleton}
 import graphql.GraphQL
-import models.errors.InvalidTitle
+import models.errors.{InvalidTitle, TooComplexQueryError}
 import play.api.Configuration
 import play.api.libs.json._
 import play.api.mvc._
@@ -83,10 +83,21 @@ class AppController @Inject()(cc: ControllerComponents,
       schema = graphql.Schema,
       queryAst = queryAst,
       variables = variables.getOrElse(Json.obj()),
+      exceptionHandler = exceptionHandler,
+      queryReducers = List(
+        QueryReducer.rejectMaxDepth[Unit](graphql.maxQueryDepth),
+        QueryReducer.rejectComplexQueries[Unit](graphql.maxQueryComplexity, (_, _) => TooComplexQueryError)
+      )
     ).map(Ok(_)).recover {
+//      case error: QueryReducingError => Forbidden(error.resolveError)
       case error: QueryAnalysisError ⇒ BadRequest(error.resolveError)
       case error: ErrorWithResolver ⇒ InternalServerError(error.resolveError)
     }
     case Failure(ex) => Future.successful(Ok(s"${ex.getMessage}"))
+  }
+
+  lazy val exceptionHandler = ExceptionHandler {
+    case (_, error@TooComplexQueryError) ⇒ HandledException(error.getMessage)
+    case (_, error@MaxQueryDepthReachedError(_)) ⇒ HandledException(error.getMessage)
   }
 }
