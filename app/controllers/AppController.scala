@@ -27,8 +27,6 @@ class AppController @Inject()(cc: ControllerComponents,
                               env: play.Environment,
                               config: Configuration,
                               graphql: GraphQL) extends AbstractController(cc) {
-  //TODO: Should be moved to a config
-  val tokenHeaderName = "X-Auth-Token"
 
   implicit val system: ActorSystem = ActorSystem()
 
@@ -77,11 +75,9 @@ class AppController @Inject()(cc: ControllerComponents,
     })
   }
 
-  //TODO: Move utils out of controller...
   def parseVariables(variables: String): JsObject = if (variables.trim.isEmpty || variables.trim == "null") Json.obj()
   else Json.parse(variables).as[JsObject]
 
-  //TODO: Move utils out of controller...
   def executeQuery(query: String, variables: Option[JsObject] = None, operation: Option[String] = None): Future[Result] = QueryParser.parse(query) match {
     case Success(queryAst: Document) => Executor.execute(
       schema = graphql.Schema,
