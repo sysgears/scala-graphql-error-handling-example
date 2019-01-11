@@ -26,7 +26,7 @@ class PostRepository @Inject()(implicit val executionContext: ExecutionContext) 
         newPost
       }
     } {
-      _ => Future.failed(AlreadyExists(s"Post with title: ${post.title} already exists."))
+      _ => Future.failed(AlreadyExists(s"Post with title: '${post.title}' already exists."))
     }
   }
 
