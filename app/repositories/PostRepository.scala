@@ -4,7 +4,7 @@ import com.google.inject.Inject
 
 import scala.collection.mutable
 import models.Post
-import models.errors.AlreadyExists
+import models.errors.{AlreadyExists, NotFound}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -26,7 +26,7 @@ class PostRepository @Inject()(implicit val executionContext: ExecutionContext) 
         newPost
       }
     } {
-      _ => Future.failed(AlreadyExists(s"Post with title: '${post.title}' already exists."))
+      _ => Future.failed(AlreadyExists(s"Post with title='${post.title}' already exists."))
     }
   }
 
@@ -49,9 +49,9 @@ class PostRepository @Inject()(implicit val executionContext: ExecutionContext) 
             val foundPostIndex = postCollection.indexWhere(_.id == post.id)
             postCollection(foundPostIndex) = post
             Future.successful(post)
-          case _ => Future.failed(new Exception(s"Not found post with id=${post.id}"))
+          case _ => Future.failed(NotFound(s"Can't find post with id=${post.id}."))
         }
-      case _ => Future.failed(new Exception("Post id wasn't provided"))
+      case _ => Future.failed(NotFound("Post's id wasn't provided."))
     }
   }
 
