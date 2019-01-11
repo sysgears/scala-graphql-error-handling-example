@@ -1,10 +1,10 @@
-#Error handling in GraphQL API written in Scala
+# Error handling in GraphQL API written in Scala
 
 [![Build Status](https://travis-ci.org/kmusienko/graphql-error-handling.svg?branch=master)](https://travis-ci.org/kmusienko/graphql-error-handling) 
 
 This is an example of a GraphQL server written with Play framework and Sangria that shows how to implement error handling in GraphQL API.
 
-##How to start
+## How to start
 
 Run the application:
 
@@ -12,7 +12,7 @@ Run the application:
 
 After launch, the application will be accessible on `localhost:9000`
 
-##Sources
+## Sources
 
 https://graphql.org/
 
