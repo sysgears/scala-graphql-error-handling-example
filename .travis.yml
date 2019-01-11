@@ -1,0 +1,8 @@
+language: scala
+
+scala:
+- 2.12.6
+
+script:
+- sbt clean
+- sbt compile
