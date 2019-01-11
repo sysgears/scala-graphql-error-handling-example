@@ -12,7 +12,7 @@ class PostRepository @Inject()(implicit val executionContext: ExecutionContext) 
 
   val postCollection: mutable.ArrayBuffer[Post] = mutable.ArrayBuffer.empty[Post]
 
-  /** @inheritdoc*/
+  /** @inheritdoc */
   override def create(post: Post): Future[Post] = synchronized {
     postCollection.find(_.title == post.title).fold {
       Future {
@@ -30,34 +30,35 @@ class PostRepository @Inject()(implicit val executionContext: ExecutionContext) 
     }
   }
 
-  /** @inheritdoc*/
+  /** @inheritdoc */
   override def find(id: Long): Future[Option[Post]] = Future.successful {
-    postCollection.find(_.id == id)
+    postCollection.find(_.id.contains(id))
   }
 
-  /** @inheritdoc*/
+  /** @inheritdoc */
   override def findAll(): Future[List[Post]] = Future.successful {
     postCollection.toList
   }
 
-  /** @inheritdoc*/
+  /** @inheritdoc */
   override def update(post: Post): Future[Post] = synchronized {
-    find(post.id.get).flatMap {
-      case Some(foundPost) =>
-        val updatedPost = foundPost.copy()
-        val foundPostIndex = postCollection.indexWhere(_.id == post.id)
-
-        postCollection(foundPostIndex) = updatedPost
-
-        Future.successful(updatedPost)
-      case _ => Future.failed(new Exception(s"Not found Person with id=${post.id}"))
+    post.id match {
+      case Some(id) =>
+        find(id).flatMap {
+          case Some(_) =>
+            val foundPostIndex = postCollection.indexWhere(_.id == post.id)
+            postCollection(foundPostIndex) = post
+            Future.successful(post)
+          case _ => Future.failed(new Exception(s"Not found post with id=${post.id}"))
+        }
+      case _ => Future.failed(new Exception("Post id wasn't provided"))
     }
   }
 
-  /** @inheritdoc*/
+  /** @inheritdoc */
   override def delete(id: Long): Future[Boolean] = Future.successful {
     synchronized {
-      postCollection.indexWhere(_.id == id) match {
+      postCollection.indexWhere(_.id.contains(id)) match {
         case -1 => false
         case personIndex =>
           postCollection.remove(personIndex)

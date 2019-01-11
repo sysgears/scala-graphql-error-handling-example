@@ -20,4 +20,10 @@ class PostResolver @Inject()(val postRepository: PostRepository,
       postRepository.create(Post(title = title, content = content))
     }
   }
+
+  def findPost(id: Long): Future[Option[Post]] = postRepository.find(id)
+
+  def updatePost(id: Long, title: String, content: String): Future[Post] = postRepository.update(Post(Some(id), title, content))
+
+  def deletePost(id: Long): Future[Boolean] = postRepository.delete(id)
 }
