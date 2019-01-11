@@ -83,21 +83,16 @@ class AppController @Inject()(cc: ControllerComponents,
       schema = graphql.Schema,
       queryAst = queryAst,
       variables = variables.getOrElse(Json.obj()),
-      exceptionHandler = exceptionHandler,
+      exceptionHandler = graphql.exceptionHandler,
       queryReducers = List(
         QueryReducer.rejectMaxDepth[Unit](graphql.maxQueryDepth),
         QueryReducer.rejectComplexQueries[Unit](graphql.maxQueryComplexity, (_, _) => TooComplexQueryError)
       )
     ).map(Ok(_)).recover {
-//      case error: QueryReducingError => Forbidden(error.resolveError)
+      //      case error: QueryReducingError => Forbidden(error.resolveError)
       case error: QueryAnalysisError ⇒ BadRequest(error.resolveError)
       case error: ErrorWithResolver ⇒ InternalServerError(error.resolveError)
     }
-    case Failure(ex) => Future.successful(Ok(s"${ex.getMessage}"))
-  }
-
-  lazy val exceptionHandler = ExceptionHandler {
-    case (_, error@TooComplexQueryError) ⇒ HandledException(error.getMessage)
-    case (_, error@MaxQueryDepthReachedError(_)) ⇒ HandledException(error.getMessage)
+    case Failure(ex) => Future(BadRequest(s"${ex.getMessage}"))
   }
 }
