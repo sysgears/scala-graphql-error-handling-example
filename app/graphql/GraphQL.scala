@@ -2,12 +2,14 @@ package graphql
 
 import com.google.inject.{Inject, Singleton}
 import graphql.schema.PostSchema
-import models._
 import models.errors.{InvalidTitle, TooComplexQueryError}
 import sangria.execution.{ExceptionHandler, HandledException, MaxQueryDepthReachedError}
-import sangria.schema.{ObjectType, Schema, fields}
+import sangria.schema.{ObjectType, fields}
 import sangria.validation.UndefinedFieldViolation
 
+/**
+  * Defines the global GraphQL schema of the application.
+  */
 @Singleton
 class GraphQL @Inject()(val personSchema: PostSchema) {
 
@@ -29,6 +31,9 @@ class GraphQL @Inject()(val personSchema: PostSchema) {
     )
   )
 
+  /**
+    * Exception handler that defines custom error handling mechanism.
+    */
   val exceptionHandler = ExceptionHandler(
     onException = {
       case (m, error: InvalidTitle) => HandledException(
@@ -39,7 +44,7 @@ class GraphQL @Inject()(val personSchema: PostSchema) {
       )
       case (_, error@TooComplexQueryError) => HandledException(error.getMessage)
       case (_, error@MaxQueryDepthReachedError(_)) => HandledException(error.getMessage)
-    }/*,
+    },
     onViolation = {
       case (m, v: UndefinedFieldViolation) =>
         HandledException("Field is missing!",
@@ -47,6 +52,6 @@ class GraphQL @Inject()(val personSchema: PostSchema) {
             "fieldName" → m.scalarNode(v.fieldName, "String", Set.empty),
             "errorCode" → m.scalarNode("FIELD_MISSING", "String", Set.empty))
         )
-    }*/
+    }
   )
 }

@@ -6,6 +6,9 @@ import models.Post
 import sangria.macros.derive.{ObjectTypeName, deriveObjectType}
 import sangria.schema._
 
+/**
+  * Defines GraphQL schema over the Post entity.
+  */
 class PostSchema @Inject()(postResolver: PostResolver) {
 
   implicit val PostType: ObjectType[Unit, Post] = deriveObjectType[Unit, Post](ObjectTypeName("Post"))

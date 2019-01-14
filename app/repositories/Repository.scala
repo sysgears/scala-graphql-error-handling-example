@@ -5,7 +5,7 @@ import scala.concurrent.Future
 trait Repository[T] {
 
   /**
-    * Creates instance.
+    * Creates an instance.
     *
     * @param item a new instance
     * @return created instance
@@ -13,7 +13,7 @@ trait Repository[T] {
   def create(item: T): Future[T]
 
   /**
-    * Returns instance by id.
+    * Returns an instance by id.
     *
     * @param id an id of the instance
     * @return found instance
@@ -28,7 +28,7 @@ trait Repository[T] {
   def findAll(): Future[List[T]]
 
   /**
-    * Updates existing instance.
+    * Updates an existing instance.
     *
     * @param item new instance
     * @return updated instance
@@ -36,7 +36,7 @@ trait Repository[T] {
   def update(item: T): Future[T]
 
   /**
-    * Delete existing instance by id.
+    * Delete an existing instance by id.
     *
     * @param id an id of some instance
     * @return true/false result of deleting

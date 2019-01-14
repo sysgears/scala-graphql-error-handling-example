@@ -4,11 +4,11 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.google.inject.{Inject, Singleton}
 import graphql.GraphQL
-import models.errors.{InvalidTitle, TooComplexQueryError}
+import models.errors.TooComplexQueryError
 import play.api.Configuration
 import play.api.libs.json._
 import play.api.mvc._
-import sangria.ast.{Document, Field}
+import sangria.ast.Document
 import sangria.execution._
 import sangria.marshalling.playJson._
 import sangria.parser.QueryParser
@@ -36,7 +36,6 @@ class AppController @Inject()(cc: ControllerComponents,
 
   def graphqlBody = Action.async(parse.json) {
     implicit request: Request[JsValue] =>
-      //TODO: Front-end provides an array of graphql objects as batch. Use Sangria batch executor here.
 
       val extract: JsValue => (String, Option[String], Option[JsObject]) = query => (
         (query \ "query").as[String],
@@ -48,7 +47,6 @@ class AppController @Inject()(cc: ControllerComponents,
         }
       )
 
-      //TODO: Define a separate type for it
       val maybeQuery: Try[(String, Option[String], Option[JsObject])] = Try {
         request.body match {
           case arrayBody@JsArray(_) => extract(arrayBody.value(0))
