@@ -3,7 +3,7 @@ package controllers
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.google.inject.{Inject, Singleton}
-import graphql.GraphQL
+import graphql.{GraphQL}
 import models.errors.TooComplexQueryError
 import play.api.Configuration
 import play.api.libs.json._
@@ -84,10 +84,9 @@ class AppController @Inject()(cc: ControllerComponents,
       exceptionHandler = graphql.exceptionHandler,
       queryReducers = List(
         QueryReducer.rejectMaxDepth[Unit](graphql.maxQueryDepth),
-        QueryReducer.rejectComplexQueries[Unit](graphql.maxQueryComplexity, (_, _) => TooComplexQueryError)
+        QueryReducer.rejectComplexQueries[Unit](graphql.maxQueryComplexity, (_, _) => TooComplexQueryError())
       )
     ).map(Ok(_)).recover {
-      //      case error: QueryReducingError => Forbidden(error.resolveError)
       case error: QueryAnalysisError ⇒ BadRequest(error.resolveError)
       case error: ErrorWithResolver ⇒ InternalServerError(error.resolveError)
     }

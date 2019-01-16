@@ -6,12 +6,13 @@ import models.errors.{InvalidTitle, TooComplexQueryError}
 import sangria.execution.{ExceptionHandler, HandledException, MaxQueryDepthReachedError}
 import sangria.schema.{ObjectType, fields}
 import sangria.validation.UndefinedFieldViolation
+import sangria.marshalling.MarshallingUtil._
 
 /**
   * Defines the global GraphQL schema of the application.
   */
 @Singleton
-class GraphQL @Inject()(val personSchema: PostSchema) {
+class GraphQL @Inject()(val postSchema: PostSchema) {
 
   val maxQueryDepth = 15
   val maxQueryComplexity = 1000
@@ -19,13 +20,13 @@ class GraphQL @Inject()(val personSchema: PostSchema) {
   val Schema = sangria.schema.Schema(
     query = ObjectType("Query",
       fields(
-        personSchema.Queries: _*
+        postSchema.Queries: _*
       )
     ),
     mutation = Some(
       ObjectType("Mutation",
         fields(
-          personSchema.Mutations: _*
+          postSchema.Mutations: _*
         )
       )
     )
@@ -39,18 +40,20 @@ class GraphQL @Inject()(val personSchema: PostSchema) {
       case (m, error: InvalidTitle) => HandledException(
         error.getMessage,
         Map(
-          "validation rule" -> m.scalarNode("The following symbols are allowed: a-z,A-Z,0-9,-", "String", Set.empty)
-        )
+          "validation_rule" -> m.fromString("The following symbols are allowed: [a-z,A-Z,0-9,- ]. From 3 to 100 symbols.")
+        ),
+        addFieldsInError = true,
+        addFieldsInExtensions = false
       )
-      case (_, error@TooComplexQueryError) => HandledException(error.getMessage)
-      case (_, error@MaxQueryDepthReachedError(_)) => HandledException(error.getMessage)
+      case (_, error: TooComplexQueryError) => HandledException(error.getMessage)
+      case (_, error: MaxQueryDepthReachedError) => HandledException(error.getMessage)
     },
     onViolation = {
       case (m, v: UndefinedFieldViolation) =>
         HandledException("Field is missing!",
           Map(
-            "fieldName" → m.scalarNode(v.fieldName, "String", Set.empty),
-            "errorCode" → m.scalarNode("FIELD_MISSING", "String", Set.empty))
+            "fieldName" → m.fromString(v.fieldName),
+            "errorCode" → m.fromString("FIELD_MISSING"))
         )
     }
   )
