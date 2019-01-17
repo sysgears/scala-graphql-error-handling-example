@@ -2,12 +2,12 @@ package graphql.resolvers
 
 import com.google.inject.Inject
 import models.Post
-import repositories.PostRepository
+import repositories.Repository
 import validators.PostValidator
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PostResolver @Inject()(val postRepository: PostRepository,
+class PostResolver @Inject()(val postRepository: Repository[Post],
                              val postValidator: PostValidator,
                              implicit val executionContext: ExecutionContext) {
 
