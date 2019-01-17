@@ -6,7 +6,7 @@ import validators.{PostValidator, PostValidatorImpl}
 /**
   * Guice module with bindings related to the Post entity.
   */
-class PostModule extends AbstractModule {
+class PostBinding extends AbstractModule {
   override def configure(): Unit = {
     bind(classOf[PostValidator]).to(classOf[PostValidatorImpl]).in(Scopes.SINGLETON)
   }
