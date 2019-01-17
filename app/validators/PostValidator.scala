@@ -2,6 +2,9 @@ package validators
 
 import scala.concurrent.Future
 
+/**
+  * Determines validation functions for the Post entity.
+  */
 trait PostValidator {
 
   /**

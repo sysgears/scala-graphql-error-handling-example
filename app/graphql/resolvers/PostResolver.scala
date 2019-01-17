@@ -10,7 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * A resolver that does actions on the Post entity.
   *
-  * @param postRepository   a repository with database-related operations for the Post entity
+  * @param postRepository   a repository that provides basic operations for the Post entity
   * @param postValidator    a validator that contains functions that validates the Post's fields
   * @param executionContext a thread pool to asynchronously execute operations
   */

@@ -2,6 +2,11 @@ package repositories
 
 import scala.concurrent.Future
 
+/**
+  * A repository trait that determines basic CRUD operations.
+  *
+  * @tparam T type of entity on which operations are performed
+  */
 trait Repository[T] {
 
   /**

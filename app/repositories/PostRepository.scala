@@ -8,11 +8,19 @@ import models.errors.{AlreadyExists, NotFound}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+  * Provides basic operations on the Post entity.
+  *
+  * @param executionContext a thread pool to asynchronously execute operations
+  */
 class PostRepository @Inject()(implicit val executionContext: ExecutionContext) extends Repository[Post] {
 
+  /**
+    * Collection of the Post entities.
+    */
   val postCollection: mutable.ArrayBuffer[Post] = mutable.ArrayBuffer.empty[Post]
 
-  /** @inheritdoc */
+  /** @inheritdoc*/
   override def create(post: Post): Future[Post] = synchronized {
     postCollection.find(_.title == post.title).fold {
       Future {
@@ -30,17 +38,17 @@ class PostRepository @Inject()(implicit val executionContext: ExecutionContext) 
     }
   }
 
-  /** @inheritdoc */
+  /** @inheritdoc*/
   override def find(id: Long): Future[Option[Post]] = Future.successful {
     postCollection.find(_.id.contains(id))
   }
 
-  /** @inheritdoc */
+  /** @inheritdoc*/
   override def findAll(): Future[List[Post]] = Future.successful {
     postCollection.toList
   }
 
-  /** @inheritdoc */
+  /** @inheritdoc*/
   override def update(post: Post): Future[Post] = synchronized {
     post.id match {
       case Some(id) =>
@@ -55,7 +63,7 @@ class PostRepository @Inject()(implicit val executionContext: ExecutionContext) 
     }
   }
 
-  /** @inheritdoc */
+  /** @inheritdoc*/
   override def delete(id: Long): Future[Boolean] = Future.successful {
     synchronized {
       postCollection.indexWhere(_.id.contains(id)) match {
