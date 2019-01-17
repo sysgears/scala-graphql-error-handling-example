@@ -1,9 +1,7 @@
 package controllers
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import com.google.inject.{Inject, Singleton}
-import graphql.{GraphQL}
+import graphql.GraphQL
 import models.errors.TooComplexQueryError
 import play.api.Configuration
 import play.api.libs.json._
@@ -28,13 +26,9 @@ class AppController @Inject()(cc: ControllerComponents,
                               config: Configuration,
                               graphql: GraphQL) extends AbstractController(cc) {
 
-  implicit val system: ActorSystem = ActorSystem()
+  def graphiql: Action[AnyContent] = if (env.isDev || env.isTest) Action(Ok(views.html.graphiql())) else Action(NotFound)//todo: remove env
 
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
-
-  def graphiql = if (env.isDev || env.isTest) Action(Ok(views.html.graphiql())) else Action(NotFound)
-
-  def graphqlBody = Action.async(parse.json) {
+  def graphqlBody: Action[JsValue] = Action.async(parse.json) {
     implicit request: Request[JsValue] =>
 
       val extract: JsValue => (String, Option[String], Option[JsObject]) = query => (
@@ -43,7 +37,7 @@ class AppController @Inject()(cc: ControllerComponents,
         (query \ "variables").toOption.flatMap {
           case JsString(vars) => Some(parseVariables(vars))
           case obj: JsObject => Some(obj)
-          case _ ⇒ None
+          case _ => None
         }
       )
 
@@ -54,7 +48,7 @@ class AppController @Inject()(cc: ControllerComponents,
           case otherType =>
             //TODO: Define custom type for this error
             throw new Error {
-              s"/graphql endpint does not support request body of type [${otherType.getClass.getSimpleName}]"
+              s"/graphql endpoint does not support request body of type [${otherType.getClass.getSimpleName}]"
             }
         }
       }
