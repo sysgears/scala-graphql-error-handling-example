@@ -49,7 +49,8 @@ class PostResolver @Inject()(val postRepository: PostRepository,
     * @param content a content of the post
     * @return updated post
     */
-  def updatePost(id: Long, title: String, content: String): Future[Post] = postRepository.update(Post(Some(id), title, content))
+  def updatePost(id: Long, title: String, content: String): Future[Post] =
+    postRepository.update(Post(Some(id), title, content))
 
   /**
     * Deletes a post by id.
