@@ -3,3 +3,5 @@ GET     /                           controllers.AppController.graphiql
 POST    /graphql                    controllers.AppController.graphqlBody
 
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+GET     /schema                     controllers.AppController.renderSchema
