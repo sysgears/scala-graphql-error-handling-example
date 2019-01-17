@@ -37,10 +37,10 @@ class GraphQL @Inject()(val postSchema: PostSchema) {
     */
   val exceptionHandler = ExceptionHandler(
     onException = {
-      case (m, error: InvalidTitle) => HandledException(
+      case (resultMarshaller, error: InvalidTitle) => HandledException(
         error.getMessage,
         Map(
-          "validation_rule" -> m.fromString("The following symbols are allowed: [a-z,A-Z,0-9,- ]. From 3 to 100 symbols.")
+          "validation_rule" -> resultMarshaller.fromString("The following symbols are allowed: [a-z,A-Z,0-9,- ]. From 3 to 100 symbols.")
         ),
         addFieldsInError = true,
         addFieldsInExtensions = false
@@ -49,11 +49,11 @@ class GraphQL @Inject()(val postSchema: PostSchema) {
       case (_, error: MaxQueryDepthReachedError) => HandledException(error.getMessage)
     },
     onViolation = {
-      case (m, v: UndefinedFieldViolation) =>
+      case (resultMarshaller, violation: UndefinedFieldViolation) =>
         HandledException("Field is missing!",
           Map(
-            "fieldName" → m.fromString(v.fieldName),
-            "errorCode" → m.fromString("FIELD_MISSING"))
+            "fieldName" -> resultMarshaller.fromString(violation.fieldName),
+            "errorCode" -> resultMarshaller.fromString("FIELD_MISSING"))
         )
     }
   )
