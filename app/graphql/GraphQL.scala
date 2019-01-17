@@ -50,10 +50,12 @@ class GraphQL @Inject()(val postSchema: PostSchema) {
     },
     onViolation = {
       case (resultMarshaller, violation: UndefinedFieldViolation) =>
-        HandledException("Field is missing!",
+        HandledException(
+          "Field is missing!",
           Map(
             "fieldName" -> resultMarshaller.fromString(violation.fieldName),
-            "errorCode" -> resultMarshaller.fromString("FIELD_MISSING"))
+            "errorCode" -> resultMarshaller.fromString("FIELD_MISSING")
+          )
         )
     }
   )
