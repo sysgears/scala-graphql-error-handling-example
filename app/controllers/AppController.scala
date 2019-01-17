@@ -3,7 +3,6 @@ package controllers
 import com.google.inject.{Inject, Singleton}
 import graphql.GraphQL
 import models.errors.TooComplexQueryError
-import play.api.Configuration
 import play.api.libs.json._
 import play.api.mvc._
 import sangria.ast.Document
@@ -22,9 +21,7 @@ import scala.util.{Failure, Success, Try}
   */
 @Singleton
 class AppController @Inject()(cc: ControllerComponents,
-                              env: play.Environment,
-                              config: Configuration,
-                              graphql: GraphQL) extends AbstractController(cc) {
+                              graphQL: GraphQL) extends AbstractController(cc) {
 
   def graphiql: Action[AnyContent] = Action(Ok(views.html.graphiql()))
 
@@ -63,7 +60,7 @@ class AppController @Inject()(cc: ControllerComponents,
 
   def renderSchema = Action {
     Ok(SchemaRenderer.renderSchema {
-      graphql.Schema
+      graphQL.Schema
     })
   }
 
@@ -72,13 +69,13 @@ class AppController @Inject()(cc: ControllerComponents,
 
   def executeQuery(query: String, variables: Option[JsObject] = None, operation: Option[String] = None): Future[Result] = QueryParser.parse(query) match {
     case Success(queryAst: Document) => Executor.execute(
-      schema = graphql.Schema,
+      schema = graphQL.Schema,
       queryAst = queryAst,
       variables = variables.getOrElse(Json.obj()),
-      exceptionHandler = graphql.exceptionHandler,
+      exceptionHandler = graphQL.exceptionHandler,
       queryReducers = List(
-        QueryReducer.rejectMaxDepth[Unit](graphql.maxQueryDepth),
-        QueryReducer.rejectComplexQueries[Unit](graphql.maxQueryComplexity, (_, _) => TooComplexQueryError())
+        QueryReducer.rejectMaxDepth[Unit](graphQL.maxQueryDepth),
+        QueryReducer.rejectComplexQueries[Unit](graphQL.maxQueryComplexity, (_, _) => TooComplexQueryError())
       )
     ).map(Ok(_)).recover {
       case error: QueryAnalysisError ⇒ BadRequest(error.resolveError)
