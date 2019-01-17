@@ -7,12 +7,19 @@ import sangria.macros.derive.{ObjectTypeName, deriveObjectType}
 import sangria.schema._
 
 /**
-  * Defines GraphQL schema over the Post entity.
+  * Defines GraphQL schema for the Post entity.
   */
 class PostSchema @Inject()(postResolver: PostResolver) {
 
+  /**
+    * Sangria's representation of the Post type.
+    * It's necessary to convert Post object into Sangria's GraphQL object to represent it in the GraphQL format.
+    */
   implicit val PostType: ObjectType[Unit, Post] = deriveObjectType[Unit, Post](ObjectTypeName("Post"))
 
+  /**
+    * List of GraphQL queries defined for the Post type.
+    */
   val Queries: List[Field[Unit, Unit]] = List(
     Field(
       name = "posts",
@@ -31,6 +38,9 @@ class PostSchema @Inject()(postResolver: PostResolver) {
     )
   )
 
+  /**
+    * List of GraphQL mutations defined for the Post type.
+    */
   val Mutations: List[Field[Unit, Unit]] = List(
     Field(
       name = "addPost",
