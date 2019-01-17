@@ -2,7 +2,7 @@ package controllers
 
 import com.google.inject.{Inject, Singleton}
 import graphql.GraphQL
-import models.errors.TooComplexQueryError
+import models.errors.{TooComplexQueryError, UnsupportedBodyTypeError}
 import play.api.libs.json._
 import play.api.mvc._
 import sangria.ast.Document
@@ -20,7 +20,7 @@ import scala.util.{Failure, Success, Try}
   * application's home page.
   *
   * @param controllerComponents a base controller components dependencies that most controllers rely on.
-  * @param graphQL an object that 
+  * @param graphQL              an object that
   */
 @Singleton
 class AppController @Inject()(controllerComponents: ControllerComponents,
@@ -54,10 +54,9 @@ class AppController @Inject()(controllerComponents: ControllerComponents,
           case arrayBody@JsArray(_) => extract(arrayBody.value(0))
           case objectBody@JsObject(_) => extract(objectBody)
           case otherType =>
-            //TODO: Define custom type for this error
-            throw new Error {
+            throw UnsupportedBodyTypeError(
               s"/graphql endpoint does not support request body of type [${otherType.getClass.getSimpleName}]"
-            }
+            )
         }
       }
 
