@@ -26,7 +26,7 @@ class AppController @Inject()(cc: ControllerComponents,
                               config: Configuration,
                               graphql: GraphQL) extends AbstractController(cc) {
 
-  def graphiql: Action[AnyContent] = if (env.isDev || env.isTest) Action(Ok(views.html.graphiql())) else Action(NotFound)//todo: remove env
+  def graphiql: Action[AnyContent] = Action(Ok(views.html.graphiql()))
 
   def graphqlBody: Action[JsValue] = Action.async(parse.json) {
     implicit request: Request[JsValue] =>
