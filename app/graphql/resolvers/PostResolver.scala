@@ -2,7 +2,7 @@ package graphql.resolvers
 
 import com.google.inject.Inject
 import models.Post
-import repositories.Repository
+import repositories.PostRepository
 import validators.PostValidator
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,7 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
   * @param postValidator    a validator that contains functions that validates the Post's fields
   * @param executionContext a thread pool to asynchronously execute operations
   */
-class PostResolver @Inject()(val postRepository: Repository[Post],
+class PostResolver @Inject()(val postRepository: PostRepository,
                              val postValidator: PostValidator,
                              implicit val executionContext: ExecutionContext) {
 
