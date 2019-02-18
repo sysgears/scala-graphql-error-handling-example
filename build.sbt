@@ -15,7 +15,7 @@ libraryDependencies ++= Seq(
   evolutions,
   guice,
   "org.sangria-graphql" %% "sangria-play-json" % "1.0.4",
-  "org.sangria-graphql" %% "sangria" % "1.4.1",
+  "org.sangria-graphql" %% "sangria" % "1.4.2",
 
   "com.h2database" % "h2" % "1.4.197",
 
