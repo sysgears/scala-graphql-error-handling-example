@@ -108,6 +108,14 @@ class AppController @Inject()(controllerComponents: ControllerComponents,
       case error: QueryAnalysisError ⇒ BadRequest(error.resolveError)
       case error: ErrorWithResolver ⇒ InternalServerError(error.resolveError)
     }
-    case Failure(ex) => Future(BadRequest(s"${ex.getMessage}"))
+    case Failure(ex) => Future(
+      BadRequest(
+        JsObject(
+          Seq(
+            "error" -> JsString("Unable to parse query.")
+          )
+        )
+      )
+    )
   }
 }
