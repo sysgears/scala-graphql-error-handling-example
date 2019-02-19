@@ -10,7 +10,9 @@ Run the application:
 
 `sbt run`
 
-After launch, the application will be accessible on `localhost:9000`
+After launch, the application will be accessible on `localhost:9000`. The application uses in-memory H2 database that
+is initialized by Play evolutions. When you start the application, you will see an error page with a suggestion to run 
+the SQL script. Click `Apply this script now!`.
 
 ## Sources
 
