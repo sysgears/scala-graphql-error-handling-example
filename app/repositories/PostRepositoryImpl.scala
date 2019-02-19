@@ -60,14 +60,13 @@ class PostRepositoryImpl @Inject()(val database: AppDatabase,
     */
   object Actions {
 
-    def create(post: Post): DBIO[Post] =
-      for {
-        maybePost <- if (post.id.isEmpty) DBIO.successful(None) else find(post.id.get)
-        _ <- maybePost.fold(DBIO.successful()) {
+    def create(post: Post): DBIO[Post] = for {
+      maybePost <- if (post.id.isEmpty) DBIO.successful(None) else find(post.id.get)
+      _ <- maybePost.fold(DBIO.successful()) {
           _ => DBIO.failed(AlreadyExists(s"Post with id = ${post.id} already exists."))
         }
-        maybePostWithSameTitle <- postQuery.filter(_.title === post.title).result
-        id <- if (maybePostWithSameTitle.lengthCompare(1) < 0) postQuery returning postQuery.map(_.id) += post else {
+      postWithSameTitle <- postQuery.filter(_.title === post.title).result
+      id <- if (postWithSameTitle.lengthCompare(1) < 0) postQuery returning postQuery.map(_.id) += post else {
           DBIO.failed(AlreadyExists(s"Post with title = '${post.title}' already exists."))
         }
       } yield post.copy(id = Some(id))
