@@ -50,7 +50,7 @@ class GraphQL @Inject()(val postSchema: PostSchema) {
       case (resultMarshaller, error: InvalidTitle) => HandledException(
         error.getMessage,
         Map(
-          "validation_rule" -> resultMarshaller.fromString("Only alphanumeric characters are allowed: a-z, A-Z, 0-9, and a hyphen -. The length must be 3 up to 100 characters.")
+          "validation_rule" -> resultMarshaller.fromString("Allowed characters: a-z, A-Z, 0-9, and -. The length must be 3 up to 100 characters.")
         ),
         addFieldsInError = true,
         addFieldsInExtensions = false
